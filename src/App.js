@@ -1,25 +1,59 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import "./App.css";
+import Post from "./Components/PostComp/Post";
+import { Badge } from "reactstrap";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      tumblelog: [],
+      postsStart: [],
+      postsTotal: [],
+      postsType: [],
+      posts: [],
+      DataisLoaded: false,
+    };
+  }
+
+  componentDidMount() {
+    fetch("http://localhost:3000/data.json")
+      .then((res) => res.json())
+      .then((json) => {
+        this.setState({
+          tumblelog: json.tumblelog,
+          postsStart: json["posts-start"],
+          postsTotal: json["posts-total"],
+          postsType: json["posts-type"],
+          posts: json.posts,
+          DataisLoaded: true,
+        });
+      });
+  }
+  render() {
+    const { DataisLoaded } = this.state;
+    if (!DataisLoaded)
+      return (
+        <div>
+          <h1>Loading... </h1>
+        </div>
+      );
+
+    return (
+      <div className="App">
+        <div className="Content">
+          <div className="App-header">
+            <strong>{this.state.tumblelog.title}</strong>
+          </div>
+          <div id="description">{this.state.tumblelog.description}</div>
+          <div className="totalPostNumber">
+            <Badge> TOTAL POST: {this.state.postsTotal}</Badge>
+          </div>
+          <Post posts={this.state.posts} />
+        </div>
+      </div>
+    );
+  }
 }
 
 export default App;
